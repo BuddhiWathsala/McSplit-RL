@@ -327,7 +327,7 @@ int partition(vector<int>& all_vv, int start, int len, const vector<unsigned int
 vector<Bidomain> rewardfeed(const vector<Bidomain> & d,int bd_idx,vector<VtxPair> & current, vector<int> & left,
         vector<int> & right,vector<int> & lgrade,vector<int> & rgrade, const Graph & g0, const Graph & g1, int v, int w,
         bool multiway)
-{//每个domain均分成2个new_domain分别是与当前对应点相连或者不相连
+{
     vector<Bidomain> new_d;
     new_d.reserve(d.size());
     //unsigned int old_bound = current.size() + calc_bound(d)+1;//这里的domain是已经去掉选了的点，但是该点还没纳入current所以+1
@@ -603,6 +603,8 @@ int sum(const vector<int> & vec) {
 int main(int argc, char** argv) {
     set_default_arguments();
     argp_parse(&argp, argc, argv, 0, 0, 0);
+    char* print_env = getenv("MCSP_PRINT");
+    bool PRINT = (print_env == NULL ? false : true);
 
     char format = arguments.dimacs ? 'D' : arguments.lad ? 'L' : 'B';
     struct Graph g0 = readGraph(arguments.filename1, format, arguments.directed,
@@ -719,23 +721,30 @@ int main(int argc, char** argv) {
     if (!check_sol(g0, g1, solution))
         fail("*** Error: Invalid solution\n");
 
-    cout << "Solution size " << solution.size() << std::endl;
-    for (int i=0; i<g0.n; i++)
-        for (unsigned int j=0; j<solution.size(); j++)
-            if (solution[j].v == i)
-                cout << "(" << solution[j].v << " -> " << solution[j].w << ") ";
-    cout << std::endl;
+    if (PRINT) {
+        cout << "Solution size " << solution.size() << std::endl;
+        for (int i=0; i<g0.n; i++)
+            for (unsigned int j=0; j<solution.size(); j++)
+                if (solution[j].v == i)
+                    cout << "(" << solution[j].v << " -> " << solution[j].w << ") ";
+        cout << std::endl;
 
-    cout<<"Nodes:                      " << nodes << endl;
-    cout<<"Cut branches:               "<<cutbranches<<endl;
-    cout<<"Conflicts:                    " <<conflicts<< endl;
-    printf("CPU time (ms):              %15ld\n", time_elapsed * 1000 / CLOCKS_PER_SEC);
-    printf("FindBest time (ms):              %15ld\n", time_find * 1000 / CLOCKS_PER_SEC);
-  #ifdef Best
-    cout<<"Best nodes:                 "<<bestnodes<<endl;
-    cout<<"Best count:                 "<<bestcount<<endl;
-#endif
-    if (aborted)
-        cout << "TIMEOUT" << endl;
+        cout<<"Nodes:                      " << nodes << endl;
+        cout<<"Cut branches:               "<<cutbranches<<endl;
+        cout<<"Conflicts:                    " <<conflicts<< endl;
+        printf("CPU time (ms):              %15ld\n", time_elapsed * 1000 / CLOCKS_PER_SEC);
+        printf("FindBest time (ms):              %15ld\n", time_find * 1000 / CLOCKS_PER_SEC);
+    #ifdef Best
+        cout<<"Best nodes:                 "<<bestnodes<<endl;
+        cout<<"Best count:                 "<<bestcount<<endl;
+        #endif
+        if (aborted)
+            cout << "TIMEOUT" << endl;
+    } else {
+        printf("%lu, %lld, %lld, %lld, %ld, %ld\n", solution.size(), nodes, cutbranches, 
+                conflicts, (time_elapsed*1000/CLOCKS_PER_SEC),
+                (time_find*1000/CLOCKS_PER_SEC));
+    }
+    
 }
 
