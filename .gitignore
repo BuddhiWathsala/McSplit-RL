@@ -1,3 +1,6 @@
 data/
 bin/
 configs/
+*.yml
+results/
+.vscode/
