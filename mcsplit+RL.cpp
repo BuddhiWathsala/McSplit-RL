@@ -188,6 +188,7 @@ unsigned long long conflicts=0;
 clock_t bestfind;
 unsigned long long bestnodes=0,bestcount=0;
 int dl=0;
+clock_t start;
 /*******************************************************************************
                                  MCS functions
 *******************************************************************************/
@@ -459,6 +460,11 @@ void solve(const Graph & g0, const Graph & g1,vector<int> & lgrade,vector<int> &
         vector<VtxPair> & current, vector<Bidomain> & domains,
         vector<int> & left, vector<int> & right, unsigned int matching_size_goal)
 {
+    if(arguments.timeout && double(clock() - start) / CLOCKS_PER_SEC > arguments.timeout)
+    {
+        cout <<"time out" <<endl;
+        exit(0);
+    }
   //  if (abort_due_to_timeout)
    //     return;
  nodes++;
