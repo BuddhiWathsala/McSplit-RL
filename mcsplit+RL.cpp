@@ -462,7 +462,7 @@ void solve(const Graph & g0, const Graph & g1,vector<int> & lgrade,vector<int> &
 {
     if(arguments.timeout && double(clock() - start) / CLOCKS_PER_SEC > arguments.timeout)
     {
-        cout <<"time out" <<endl;
+        fprintf(stderr, "Timeout: %s %s\n", arguments.filename1, arguments.filename2);
         exit(0);
     }
   //  if (abort_due_to_timeout)
